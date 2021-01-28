@@ -229,7 +229,7 @@ First we create a function that calls `m.request`.
 - `method` PUT
 - `url` specifies an endpoint that represents a resource
 - `body` is the payload that we're sending to the endpoint
-- `withCredentials` means to enable cookies (a requirement for the REM API to work)
+- `withCredentials` means to enable cookies (indicates that we're using cookies)
 
 ```JavaScript
   let count = 0;
