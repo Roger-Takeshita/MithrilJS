@@ -12,6 +12,9 @@
   - [view() - Component](#view---component)
   - [m.route() - Route](#mroute---route)
   - [m.request() - XHR (API Calls)](#mrequest---xhr-api-calls)
+  - [Lifecycle Methods](#lifecycle-methods)
+  - [Passing Data To Component](#passing-data-to-component)
+  - [State](#state)
 
 # MITHRILJS
 
@@ -260,3 +263,88 @@ In this case this endpoint returns an object with the same count value that was 
       },
   };
 ```
+
+## Lifecycle Methods
+
+[Go Back to Contents](#contents)
+
+`Components` can have the same **lifecycle methods** as virtual DOM nodes. Note that `vnode` is passed as an argument to each lifecycle method, as well as to view (with the previous `vnode` passed additionally to `onbeforeupdate`):
+
+- Components are a mechanism to encapsulate parts of a view to make code easier to organize and/or reuse.
+- Any **JavaScript object** that has a `view method` is a Mithril component. Components can be consumed via the `m()` utility:
+- A component can have following lifecycle methods:
+
+  - `oninit`
+  - `oncreate`
+  - `onbeforeupdate`
+  - `onupdate`
+  - `onbeforeremove`
+  - `onremove`
+
+  ```JavaScript
+    var ComponentWithHooks = {
+        oninit: function(vnode) {
+            console.log("initialized")
+        },
+        oncreate: function(vnode) {
+            console.log("DOM created")
+        },
+        onbeforeupdate: function(newVnode, oldVnode) {
+            return true
+        },
+        onupdate: function(vnode) {
+            console.log("DOM updated")
+        },
+        onbeforeremove: function(vnode) {
+            console.log("exit animation can start")
+            return new Promise(function(resolve) {
+                // call after animation completes
+                resolve()
+            })
+        },
+        onremove: function(vnode) {
+            console.log("removing DOM element")
+        },
+        view: function(vnode) {
+            return "hello"
+        }
+    }
+  ```
+
+Like other types of virtual DOM nodes, components may have **additional lifecycle methods** (custom methods) defined when consumed as vnode types.
+
+```JavaScript
+  function initialize(vnode) {
+      console.log("initialized as vnode")
+  }
+
+  m(ComponentWithHooks, {oninit: initialize})
+```
+
+## Passing Data To Component
+
+[Go Back to Contents](#contents)
+
+Data can be passed to component instances by passing an `attrs` object as the **second parameter** in the `hyperscript` function:
+
+```JavaScript
+  m(Example, {name: "Floyd"})
+```
+
+This data can be accessed in the component's view or lifecycle methods via the `vnode.attrs`:
+
+```JavaScript
+  var Example = {
+      view: function (vnode) {
+          return m("div", "Hello, " + vnode.attrs.name)
+      }
+  }
+```
+
+## State
+
+[Go Back to Contents](#contents)
+
+Like all virtual DOM nodes, component `vnodes` can have state. Component state is useful for supporting object-oriented architectures, for encapsulation and for separation of concerns.
+Note that **unlike many other frameworks, mutating component state does not trigger redraws or DOM updates**. Instead, **redraws** `are performed when event handlers fire`, when HTTP requests made by `m.request` complete or when the browser navigates to different routes. Mithril's component state mechanisms simply exist as a convenience for applications.
+If a state change occurs that is not as a result of any of the above conditions (e.g. after a setTimeout), then you can use `m.redraw()` **to trigger a redraw manually**.
