@@ -3,6 +3,9 @@
 - [MITHRIL.JS](#mithriljs)
   - [Links](#links)
   - [Installation](#installation)
+  - [Virtual DOM](#virtual-dom)
+    - [What a Virtual DOM Looks Like?](#what-a-virtual-dom-looks-like)
+  - [Inline Styling](#inline-styling)
   - [Render](#render)
   - [Mount a New Element](#mount-a-new-element)
     - [Element By Id](#element-by-id)
@@ -66,6 +69,62 @@
 
       </html>
     ```
+
+## Virtual DOM
+
+[Go Back to Contents](#table-of-contents)
+
+Just like in `React`, `Mithril` has a virtual DOM that only changes/renders what has been changed (component).
+
+### What a Virtual DOM Looks Like?
+
+[Go Back to Contents](#table-of-contents)
+
+```JavaScript
+  const m = require('mithril');
+
+  console.log(JSON.stringify(m('h1', 'Hello')));
+  // {
+  //   "tag":"h1",
+  //   "attrs":null,
+  //   "text":"Hello"
+  // }
+
+  console.log(JSON.stringify(m('h1.foo.bar[style=color: red]', 'Hello')));
+  // {
+  //   "tag": "h1",
+  //   "attrs": { "style": "color: red", "className": "foo bar" },
+  //   "text": "Hello"
+  // }
+```
+
+## Inline Styling
+
+[Go Back to Contents](#table-of-contents)
+
+We have 2 ways of inline styling
+
+- Chaining
+
+  ```JavaScript
+    const Component = {
+        view: () => m('h1[style=color:red]', 'Hello Friday!'),
+    };
+
+    const outputEl = document.getElementById('output');
+    m.mount(outputEl, Component);
+  ```
+
+- Pass as an attribute (an object)
+
+  ```JavaScript
+    const Component = {
+        view: () => m('h1', { style: 'color:blue' }, 'Hello Friday!'),
+    };
+
+    const outputEl = document.getElementById('output');
+    m.mount(outputEl, Component);
+  ```
 
 ## Render
 
@@ -728,3 +787,29 @@ With classes, state can be managed by class instance properties and methods, and
 ```
 
 **Note that we must use arrow functions for the event handler callbacks so the this context can be referenced correctly.**
+
+```JavaScript
+  class Person {
+      constructor(firstName, lastName) {
+          this.firstName = firstName;
+          this.lastName = lastName;
+          this.fullName = () => `${this.firstName} ${this.lastName}`;
+      }
+  }
+
+  let Component = {
+      view: function () {
+          console.log('--------------This Before--------------');
+          console.log(JSON.stringify(this, undefined, 3));
+          this.person = new Person('Roger', 'Takeshita');
+          console.log('--------------This  after--------------');
+          console.log(JSON.stringify(this, undefined, 3));
+          const name = m('span', this.person.fullName());
+          return m('h1', ['Hello ', name, '!']);
+      },
+  };
+
+  const outputEl = document.getElementById('output');
+  m.mount(outputEl, Component);
+
+```
