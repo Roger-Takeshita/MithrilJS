@@ -22,6 +22,7 @@
       - [When Mithril Does Dot Redraw](#when-mithril-does-dot-redraw)
   - [view() - Component](#view---component)
   - [m.route() - Route](#mroute---route)
+    - [m.route.link()](#mroutelink)
   - [m.request() - XHR (API Calls)](#mrequest---xhr-api-calls)
   - [Lifecycle Methods](#lifecycle-methods)
     - [The DOM Element Lifecycle](#the-dom-element-lifecycle)
@@ -49,6 +50,7 @@
 - [Mithril](https://mithril.js.org/)
 - [Mithril Installation](https://mithril.js.org/installation.html)
 - [Mithril The auto-redraw system](https://mithril.js.org/autoredraw.html)
+- [Mithril 0-60](https://vimeo.com/showcase/5584199)
 
 ## Installation
 
@@ -340,6 +342,8 @@ Mithril automatically redraws after `m.request` completes:
   console.log(reponse)
 ```
 
+---
+
 ##### DISABLE AUTO-REDRAW AFTER M.REQUEST
 
 [Go Back to Contents](#table-of-contents)
@@ -353,6 +357,8 @@ You can **disable** an `auto-redraw` for a specific **request** by setting the `
 
   const response = await m.request('/api/v1/users', {background: true})
 ```
+
+---
 
 #### After Route Changes
 
@@ -474,6 +480,68 @@ The `m.route` function still **has the same auto-redrawing functionality** that 
 - The `"/splash"` right after root **means that's the default route**
 - If the **hashbang** in the URL **doesn't point to one of the defined routes** (`/splash` and `/hello`, in our case), then `Mithril redirects to the default route`.
 - So if you open the page in a browser and your URL is `https://localhost`, then you get redirected to `https://localhost/#!/splash`.
+
+### m.route.link()
+
+[Go Back to Contents](#table-of-contents)
+
+- [m.route.link - Docs](https://mithril.js.org/route.html#mroutelink)
+
+This component can create a dynamic routable link:
+
+```JavaScript
+  m(m.route.Link, {href: "/test"})
+```
+
+Using `m.route.Link` causes the link to behave as a router link - clicking it navigates to the route specified in `href`, instead of navigating away from the current page to the URL specified in `href`.
+You can also set the **options** passed to `m.route.set` when the link is clicked by passing the `options attribute`:
+
+```JavaScript
+  m(m.route.Link, {href: "/test", options: {replace: true}})
+```
+
+```JavaScript
+  m(m.route.Link, {
+      // Any hyperscript selector is valid here - it's literally passed as the
+      // first parameter to `m`.
+      selector: "span",
+      options: {replace: true},
+      href: "/test",
+      disabled: false,
+      class: "nav-link",
+      "data-foo": 1,
+      // and other attributes
+  }, "link name")
+```
+
+You can also prevent navigation by, in an `onclick` handler, invoking `ev.preventDefault()` or returning `false`. This is the same way you block other events.
+
+```JavaScript
+  m(m.route.Link, {
+      href: "/test",
+      onclick: function(e) {
+          // Do things...
+          if (notReady()) e.preventDefault()
+      }
+  }, "link name")
+```
+
+This supports full accessibility for both `a` and `button`, via a `disabled` attribute. This ensures no `href` attribute or `onclick` handler is set and that an `"aria-disabled": "true"` attribute is set. If you are passing an `onclick` handler already, that's dropped. (You can work around this by adding it directly in a lifecycle hook.) The disabled attribute is itself proxied to the element or component, so you can disable routed `<button>`s and the like.
+
+```JavaScript
+  // This does the right thing and the accessible thing for you.
+  m(m.route.Link, {disabled: disabled, href: "/test"}, "disabled")
+
+  // It renders to this hyperscript, assuming the prefix is the default one:
+  m("a", {
+      href: "#!/test",
+      disabled: disabled,
+      "aria-disabled": disabled ? "true" : false,
+      onclick: disabled ? null : function(e) {
+          // ...
+      },
+  })
+```
 
 ## m.request() - XHR (API Calls)
 
