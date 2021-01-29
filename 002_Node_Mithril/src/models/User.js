@@ -23,7 +23,7 @@ let User = {
                 url: `https://rem-rest-api.herokuapp.com/api/users/${id}`,
                 withCredentials: true,
             });
-            return response;
+            User.current = response;
         } catch (error) {
             console.log(error);
         }
@@ -36,6 +36,8 @@ let User = {
                 body: User.current,
                 withCredentials: true,
             });
+            const idx = User.list.findIndex((user) => user.id === response.id);
+            User.list[idx] = response;
             return response;
         } catch (error) {
             console.log(error);
