@@ -1,4 +1,4 @@
-<h1 id='contents'>TABLE OF CONTENTS</h1>
+<h1 id='table-of-contents'>TABLE OF CONTENTS</h1>
 
 - [MITHRILJS](#mithriljs)
   - [Installation](#installation)
@@ -15,12 +15,17 @@
   - [Lifecycle Methods](#lifecycle-methods)
   - [Passing Data To Component](#passing-data-to-component)
   - [State](#state)
+  - [Closure Component State](#closure-component-state)
+    - [POJO Component State](#pojo-component-state)
+      - [At Initialization](#at-initialization)
+      - [Via vnode.state](#via-vnodestate)
+      - [Via The This Keyword](#via-the-this-keyword)
 
 # MITHRILJS
 
 ## Installation
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 - In `index.html`
 
@@ -48,7 +53,7 @@
 
 ## Render
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 To render a new thing into the **DOM**, we first need to target the element then we add the code
 
@@ -58,7 +63,7 @@ To render a new thing into the **DOM**, we first need to target the element then
 
 ## Mount a New Element
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 We can mount a new element/component into the DOM using `m.mount()`
 
@@ -87,7 +92,7 @@ A **component** is a `JavaScript Object` with the `view` **method/property**
 
 ### Element By Id
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 ```JavaScript
   const root = document.body;
@@ -102,7 +107,7 @@ A **component** is a `JavaScript Object` with the `view` **method/property**
 
 ### Add a Single Element With a CSS Class
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 ```JavaScript
   const root = document.body;
@@ -111,7 +116,7 @@ A **component** is a `JavaScript Object` with the `view` **method/property**
 
 ### Add Multiple Elements With a CSS Class
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 To add multiple elements at the same time, we need to specify as an **Array**
 
@@ -126,7 +131,7 @@ To add multiple elements at the same time, we need to specify as an **Array**
 
 #### Adding To an Existing Element
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 Add a multiple elements with a CSS class to an element
 
@@ -141,7 +146,7 @@ Add a multiple elements with a CSS class to an element
 
 ## Mount vs Render
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 The `m.mount` function is similar to `m.render`, but instead of rendering some HTML only once, it activates Mithril's **auto-redrawing system**. To understand what that means, let's add some events:
 
@@ -176,7 +181,7 @@ The `m.mount` function is similar to `m.render`, but instead of rendering some H
 
 ## view() - Component
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 A Mithril component is just an **Javascript object** with a `view function`.
 
@@ -193,7 +198,7 @@ A Mithril component is just an **Javascript object** with a `view function`.
 
 ## m.route() - Route
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 Routing just means going from one screen to another in an application with several screens.
 Let's add a splash page that appears before our click counter. First we create a component for it:
@@ -224,7 +229,7 @@ The `m.route` function still **has the same auto-redrawing functionality** that 
 
 ## m.request() - XHR (API Calls)
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 Basically, **XHR** is just a way to talk to a server.
 First we create a function that calls `m.request`.
@@ -254,7 +259,7 @@ Calling the `increment function`, sends an object `{count: 1}` to the `/api/tuto
 In this case this endpoint returns an object with the same count value that was sent to it.
 
 ```JavaScript
-  var Hello = {
+  let Hello = {
       view: () => {
           return m('main', [
               m('h1', { class: 'title' }, 'My first app'),
@@ -266,7 +271,7 @@ In this case this endpoint returns an object with the same count value that was 
 
 ## Lifecycle Methods
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 `Components` can have the same **lifecycle methods** as virtual DOM nodes. Note that `vnode` is passed as an argument to each lifecycle method, as well as to view (with the previous `vnode` passed additionally to `onbeforeupdate`):
 
@@ -282,30 +287,30 @@ In this case this endpoint returns an object with the same count value that was 
   - `onremove`
 
   ```JavaScript
-    var ComponentWithHooks = {
-        oninit: function(vnode) {
+    let ComponentWithHooks = {
+        oninit: (vnode) => {
             console.log("initialized")
         },
-        oncreate: function(vnode) {
+        oncreate: (vnode) => {
             console.log("DOM created")
         },
-        onbeforeupdate: function(newVnode, oldVnode) {
+        onbeforeupdate: (newVnode, oldVnode) => {
             return true
         },
-        onupdate: function(vnode) {
+        onupdate: (vnode) => {
             console.log("DOM updated")
         },
-        onbeforeremove: function(vnode) {
+        onbeforeremove: (vnode) => {
             console.log("exit animation can start")
-            return new Promise(function(resolve) {
+            return new Promise((resolve) => {
                 // call after animation completes
                 resolve()
             })
         },
-        onremove: function(vnode) {
+        onremove: (vnode) => {
             console.log("removing DOM element")
         },
-        view: function(vnode) {
+        view: (vnode) => {
             return "hello"
         }
     }
@@ -314,7 +319,7 @@ In this case this endpoint returns an object with the same count value that was 
 Like other types of virtual DOM nodes, components may have **additional lifecycle methods** (custom methods) defined when consumed as vnode types.
 
 ```JavaScript
-  function initialize(vnode) {
+  const initialize = (vnode) => {
       console.log("initialized as vnode")
   }
 
@@ -323,7 +328,7 @@ Like other types of virtual DOM nodes, components may have **additional lifecycl
 
 ## Passing Data To Component
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 Data can be passed to component instances by passing an `attrs` object as the **second parameter** in the `hyperscript` function:
 
@@ -334,8 +339,8 @@ Data can be passed to component instances by passing an `attrs` object as the **
 This data can be accessed in the component's view or lifecycle methods via the `vnode.attrs`:
 
 ```JavaScript
-  var Example = {
-      view: function (vnode) {
+  let Example = {
+      view: (vnode) => {
           return m("div", "Hello, " + vnode.attrs.name)
       }
   }
@@ -343,8 +348,147 @@ This data can be accessed in the component's view or lifecycle methods via the `
 
 ## State
 
-[Go Back to Contents](#contents)
+[Go Back to Contents](#table-of-contents)
 
 Like all virtual DOM nodes, component `vnodes` can have state. Component state is useful for supporting object-oriented architectures, for encapsulation and for separation of concerns.
-Note that **unlike many other frameworks, mutating component state does not trigger redraws or DOM updates**. Instead, **redraws** `are performed when event handlers fire`, when HTTP requests made by `m.request` complete or when the browser navigates to different routes. Mithril's component state mechanisms simply exist as a convenience for applications.
-If a state change occurs that is not as a result of any of the above conditions (e.g. after a setTimeout), then you can use `m.redraw()` **to trigger a redraw manually**.
+
+- **IMPORTANT**
+  - Note that **unlike many other frameworks, mutating component state does not trigger redraws or DOM updates**. Instead, **redraws** `are performed when event handlers fire`, when HTTP requests made by `m.request` complete or when the browser navigates to different routes.
+  - Mithril's component state mechanisms simply exist as a convenience for applications.
+  - If a state change occurs that is not as a result of any of the above conditions (e.g. after a setTimeout), then you can use `m.redraw()` **to trigger a redraw manually**.
+
+## Closure Component State
+
+[Go Back to Contents](#table-of-contents)
+
+`Closure component`, which is simply a wrapper function which returns a `POJO` (Plain Old JavaScript Object) component instance, which in turn carries its own, closed-over scope.
+With a `closure component`, state can simply be maintained by variables that are declared within the outer function:
+
+```JavaScript
+  const ComponentWithState = (initialVnode) => {
+      // Component state variable, unique to each instance
+      let count = 0
+
+      // POJO component instance: any object with a
+      // view function which returns a vnode
+      return {
+          oninit: (vnode) => {
+              console.log("init a closure component")
+          },
+          view: (vnode) => {
+              return m("div",
+                  m("p", "Count: " + count),
+                  m("button", {
+                      onclick: () => {
+                          count += 1
+                      }
+                  }, "Increment count")
+              )
+          }
+      }
+  }
+```
+
+Any functions declared within the closure also have access to its state variables.
+
+```JavaScript
+  const ComponentWithState = (initialVnode) => {
+      let count = 0
+
+      const increment = () => {
+          count += 1
+      }
+
+      const decrement = () => {
+          count -= 1
+      }
+
+      return {
+          view: (vnode) => {
+              return m("div",
+                  m("p", "Count: " + count),
+                  m("button", {
+                      onclick: increment
+                  }, "Increment"),
+                  m("button", {
+                      onclick: decrement
+                  }, "Decrement")
+              )
+          }
+      }
+  }
+```
+
+Closure components are consumed in the same way as POJOs.
+
+```JavaScript
+  m(ComponentWithState, { passedData: ... })
+```
+
+A **big advantage of closure components** is that we **don't need** to worry about binding **this** when attaching event handler callbacks. In fact this is never used at all and we never have to think about this context ambiguities.
+
+### POJO Component State
+
+[Go Back to Contents](#table-of-contents)
+
+It is generally recommended that you use closures for managing component state. If, however, you have reason to manage state in a POJO, the state of a component can be accessed in three ways: as a blueprint at initialization, via `vnode.state` and via the **this** keyword in component methods.
+
+#### At Initialization
+
+[Go Back to Contents](#table-of-contents)
+
+For POJO components, the component object is the prototype of each component instance, so any property defined on the component object will be accessible as a property of `vnode.state`. This allows simple "blueprint" state initialization.
+
+In the example below, data becomes a property of the `ComponentWithInitialState` component's `vnode.state` object.
+
+```JavaScript
+  const ComponentWithInitialState = {
+      data: "Initial content",
+      view: function(vnode) {
+          return m("div", vnode.state.data)
+      }
+  }
+
+  m(ComponentWithInitialState)
+  // <div>Initial content</div>
+```
+
+#### Via vnode.state
+
+[Go Back to Contents](#table-of-contents)
+
+As you can see, state can also be accessed via the `vnode.state` property, which is available to all lifecycle methods as well as the `view` method of a component.
+
+```JavaScript
+  const ComponentWithDynamicState = {
+      oninit: (vnode) => {
+          vnode.state.data = vnode.attrs.text
+      },
+      view: (vnode) => {
+          return m("div", vnode.state.data)
+      }
+  }
+
+  m(ComponentWithDynamicState, {text: "Hello"})
+  // <div>Hello</div>
+```
+
+#### Via The This Keyword
+
+[Go Back to Contents](#table-of-contents)
+
+State can also be accessed via the **this** keyword, which is available to all lifecycle methods as well as the `view` method of a component.
+
+```JavaScript
+  const ComponentUsingThis = {
+      oninit: (vnode) => {
+          this.data = vnode.attrs.text
+      },
+      view: (vnode) => {
+          return m("div", this.data)
+      }
+  }
+
+  m(ComponentUsingThis, {text: "Hello"})
+  // <div>Hello</div>
+```
