@@ -1,6 +1,7 @@
 <h1 id='table-of-contents'>TABLE OF CONTENTS</h1>
 
-- [MITHRILJS](#mithriljs)
+- [MITHRIL.JS](#mithriljs)
+  - [Links](#links)
   - [Installation](#installation)
   - [Render](#render)
   - [Mount a New Element](#mount-a-new-element)
@@ -29,7 +30,14 @@
   - [Classes](#classes)
     - [Class Component State](#class-component-state)
 
-# MITHRILJS
+# MITHRIL.JS
+
+## Links
+
+[Go Back to Contents](#table-of-contents)
+
+- [Mithril](https://mithril.js.org/)
+- [Mithril Installation](https://mithril.js.org/installation.html)
 
 ## Installation
 

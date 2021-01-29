@@ -1,6 +1,7 @@
 <h1 id='table-of-contents'>TABLE OF CONTENTS</h1>
 
 - [NODE WITH MITHRIL](#node-with-mithril)
+  - [Links](#links)
   - [Folder and Files](#folder-and-files)
   - [Packages](#packages)
     - [Config Webpack](#config-webpack)
@@ -17,6 +18,12 @@
 # NODE WITH MITHRIL
 
 Node.js + Webpack + Mithril.js
+
+## Links
+
+[Go Back to Contents](#table-of-contents)
+
+- [Simple application tutorial](https://mithril.js.org/simple-application.html)
 
 ## Folder and Files
 
