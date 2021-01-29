@@ -13,6 +13,12 @@
   - [m.route() - Route](#mroute---route)
   - [m.request() - XHR (API Calls)](#mrequest---xhr-api-calls)
   - [Lifecycle Methods](#lifecycle-methods)
+    - [The DOM Element Lifecycle](#the-dom-element-lifecycle)
+    - [oncreate](#oncreate)
+    - [onupdate](#onupdate)
+    - [onbeforeremove](#onbeforeremove)
+    - [onremove](#onremove)
+    - [onbeforeupdate](#onbeforeupdate)
   - [Passing Data To Component](#passing-data-to-component)
   - [State](#state)
   - [Closure Component State](#closure-component-state)
@@ -273,7 +279,11 @@ In this case this endpoint returns an object with the same count value that was 
 
 [Go Back to Contents](#table-of-contents)
 
+Components and virtual DOM nodes can have lifecycle methods, also known as hooks, which are called at various points during the lifetime of a DOM element.
+
 `Components` can have the same **lifecycle methods** as virtual DOM nodes. Note that `vnode` is passed as an argument to each lifecycle method, as well as to view (with the previous `vnode` passed additionally to `onbeforeupdate`):
+All lifecyle methods receive the `vnode` as their first arguments, and have their **this** keyword bound to `vnode.state`.
+Lifecycle methods are only called as a side effect of a `m.render()` call. **They are not called if the DOM is modified outside of Mithril**.
 
 - Components are a mechanism to encapsulate parts of a view to make code easier to organize and/or reuse.
 - Any **JavaScript object** that has a `view method` is a Mithril component. Components can be consumed via the `m()` utility:
@@ -325,6 +335,144 @@ Like other types of virtual DOM nodes, components may have **additional lifecycl
 
   m(ComponentWithHooks, {oninit: initialize})
 ```
+
+### The DOM Element Lifecycle
+
+[Go Back to Contents](#table-of-contents)
+
+A DOM element is typically created and appended to the document. It may then have attributes or child nodes updated when a UI event is triggered and data is changed; and the element may alternatively be removed from the document.
+After an element is removed, it may be temporarily retained in a memory pool. The pooled element may be reused in a subsequent update (in a process called DOM recycling). Recycling an element avoids incurring the performance cost of recreating a copy of an element that existed recently.
+
+### oncreate
+
+[Go Back to Contents](#table-of-contents)
+
+The `oncreate(vnode)` hook is called **after a DOM element is created and attached to the document**.
+`oncreate` **is guaranteed to run at the end of the render cycle**, so it is safe to read layout values such as `vnode.dom.offsetHeight` and `vnode.dom.getBoundingClientRect()` from this method.
+
+- Particularities
+
+  - **This hook does not get called when an element is updated**.
+  - Like in other hooks, the **this** keyword in the `oncreate` callback points to `vnode.state`. DOM elements whose `vnodes` have an oncreate hook do not get recycled.
+
+- Applications
+
+  - The `oncreate` hook is useful for reading layout values that may trigger a repaint, starting animations and for initializing third party libraries that require a reference to the DOM element.
+
+```JavaScript
+  const HeightReporter = {
+      oncreate: (vnode) => {
+          console.log("Initialized with height of: ", vnode.dom.offsetHeight)
+      },
+      view: () => {}
+  }
+
+  m(HeightReporter, {data: "Hello"})
+```
+
+**ATTENTION: You should not modify model data synchronously from this method**. Since oncreate is run at the end of the render cycle, model changes created from this method will not be reflected in the UI until the next render cycle.
+
+### onupdate
+
+[Go Back to Contents](#table-of-contents)
+
+The `onupdate(vnode)` hook is called **after a DOM element is updated, while attached to the document**.
+`onupdate` **is guaranteed to run at the end of the render cycle**, so it is safe to read layout values such as `vnode.dom.offsetHeight` and `vnode.dom.getBoundingClientRect()` from this method.
+
+- Particularities
+
+  - This hook is only called if the element existed in the previous render cycle. It is not called when an element is created or when it is recycled.
+  - DOM elements whose `vnodes` have an onupdate hook do not get recycled.
+
+- Applications
+
+  - The `onupdate` hook is useful for reading layout values that may trigger a repaint, and for dynamically updating UI-affecting state in third party libraries after model data has been changed.
+
+```JavaScript
+  const RedrawReporter = () => {
+      let count = 0
+      return {
+          onupdate: () => {
+              console.log("Redraws so far: ", ++count)
+          },
+          view: () => {}
+      }
+  }
+
+  m(RedrawReporter, {data: "Hello"})
+```
+
+### onbeforeremove
+
+[Go Back to Contents](#table-of-contents)
+
+The `onbeforeremove(vnode)` hook is called **before a DOM element is detached from the document**. If a Promise is returned, Mithril only detaches the DOM element after the promise completes.
+
+- Particularities
+
+  - This hook is only called on the DOM element that loses its parentNode, but it does not get called in its child elements.
+  - Like in other hooks, the **this** keyword in the `onbeforeremove` callback points to `vnode.state`. DOM elements whose `vnodes` have an `onbeforeremove` hook do not get recycled.
+
+```JavaScript
+  const Fader = {
+      onbeforeremove: (vnode) => {
+          vnode.dom.classList.add("fade-out")
+          return new Promise((resolve) => {
+              setTimeout(resolve, 1000)
+          })
+      },
+      view: () => {
+          return m("div", "Bye")
+      },
+  }
+```
+
+### onremove
+
+[Go Back to Contents](#table-of-contents)
+
+The `onremove(vnode)` hook is called before a DOM element is removed from the document. If a `onbeforeremove` hook is also defined, the `onremove` hook runs after the promise returned from `onbeforeremove` is completed.
+
+- Particularities
+
+  - This hook is called on any element that is removed from the document, regardless of whether it was directly detached from its parent or whether it is a child of another element that was detached.
+  - Like in other hooks, the **this** keyword in the `onremove` callback points to `vnode.state`. DOM elements whose `vnodes` have an `onremove` hook do not get recycled.
+
+- Applications
+
+  - The `onremove` hook is useful for running clean up tasks.
+
+```JavaScript
+  const Timer = () => {
+      const timeout = setTimeout(() => {
+          console.log("timed out")
+      }, 1000)
+
+      return {
+          onremove: () => {
+              clearTimeout(timeout)
+          },
+          view: () => {}
+      }
+  }
+```
+
+### onbeforeupdate
+
+[Go Back to Contents](#table-of-contents)
+
+**ATTENTION:** [onbeforeupdate hook should only be used as a last resort.](https://mithril.js.org/lifecycle-methods.html#avoid-anti-patterns)
+
+The `onbeforeupdate(vnode, old)` hook is **called before a vnode is diffed in a update**.`If this function is defined and returns false, Mithril prevents a diff from happening to the vnode, and consequently to the vnode's children`.
+
+- Particularities
+
+  - This hook by itself does not prevent a virtual DOM subtree from being generated unless the subtree is encapsulated within a component.
+  - Like in other hooks, the **this** keyword in the `onbeforeupdate` callback points to `vnode.state`.
+
+- Applications
+
+  - This hook is useful to reduce lag in updates in cases where there is a overly large DOM tree.
 
 ## Passing Data To Component
 
