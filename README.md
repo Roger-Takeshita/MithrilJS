@@ -26,6 +26,8 @@
       - [At Initialization](#at-initialization)
       - [Via vnode.state](#via-vnodestate)
       - [Via The This Keyword](#via-the-this-keyword)
+  - [Classes](#classes)
+    - [Class Component State](#class-component-state)
 
 # MITHRILJS
 
@@ -640,3 +642,81 @@ State can also be accessed via the **this** keyword, which is available to all l
   m(ComponentUsingThis, {text: "Hello"})
   // <div>Hello</div>
 ```
+
+## Classes
+
+[Go Back to Contents](#table-of-contents)
+
+`Components` can also be written using `classes`:
+
+```JavaScript
+  class ClassComponent {
+      constructor(vnode) {
+          this.kind = "class component"
+      }
+      view() {
+          return m("div", `Hello from a ${this.kind}`)
+      }
+      oncreate() {
+          console.log(`A ${this.kind} was created`)
+      }
+  }
+```
+
+**Class components must define** a `view()` method, detected via `.prototype.view`, **to get the tree to render**.
+They can be consumed in the same way regular components can.
+
+```JavaScript
+  // EXAMPLE: via m.render
+  m.render(document.body, m(ClassComponent))
+
+  // EXAMPLE: via m.mount
+  m.mount(document.body, ClassComponent)
+
+  // EXAMPLE: via m.route
+  m.route(document.body, "/", {
+      "/": ClassComponent
+  })
+
+  // EXAMPLE: component composition
+  class AnotherClassComponent {
+      view() {
+          return m("main", [
+              m(ClassComponent)
+          ])
+      }
+  }
+```
+
+### Class Component State
+
+[Go Back to Contents](#table-of-contents)
+
+With classes, state can be managed by class instance properties and methods, and accessed via **this**:
+
+```JavaScript
+  class ComponentWithState {
+      constructor(vnode) {
+          this.count = 0
+      }
+      increment() {
+          this.count += 1
+      }
+      decrement() {
+          this.count -= 1
+      }
+      view() {
+          return m("div",
+              m("p", "Count: " + count),
+              m("button", {
+                  onclick: () => {this.increment()}
+              }, "Increment"),
+              m("button", {
+                  onclick: () => {this.decrement()}
+              }, "Decrement")
+          )
+      }
+  }
+```
+
+**Note that we must use arrow functions for the event handler callbacks so the this context can be referenced correctly.**
