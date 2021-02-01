@@ -51,6 +51,11 @@
 - [Mithril Installation](https://mithril.js.org/installation.html)
 - [Mithril The auto-redraw system](https://mithril.js.org/autoredraw.html)
 - [Mithril 0-60](https://vimeo.com/showcase/5584199)
+  - [Hello World](https://vimeo.com/showcase/5584199/video/267460838/embed)
+  - [HyperScript](https://vimeo.com/showcase/5584199/video/266752551/embed)
+  - [Auto-redraw](https://vimeo.com/showcase/5584199/video/266751555/embed)
+  - [Nesting, Lists, and Conditionals](https://vimeo.com/showcase/5584199/video/266751084/embed)
+  - [Utility App](https://vimeo.com/showcase/5584199/video/266750132/embed)
 
 ## Installation
 
