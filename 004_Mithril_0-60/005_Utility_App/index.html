@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer type="text/javascript" src="https://unpkg.com/mithril/mithril.js"></script>
+    <script defer type="text/javascript" src="src/index.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles.css">
+    <title>Mithril 0-60 Example 5</title>
+</head>
+
+<body>
+    <p>Hard coded HTML</p>
+    <div class="wrapper" style="background-color: #777777;">
+        <div class="color-channel">
+            <span>R</span>
+            <div class="chip" style="background-color: #770000;"></div>
+            <div class="button-wrapper">
+                <button>-</button>
+                <button>+</button>
+            </div>
+            <span class="decimal">119</span>
+        </div>
+        <div class="color-channel">
+            <span>G</span>
+            <div class="chip" style="background-color: #007700;"></div>
+            <div class="button-wrapper">
+                <button>-</button>
+                <button>+</button>
+            </div>
+            <span class="decimal">119</span>
+        </div>
+        <div class="color-channel">
+            <span>B</span>
+            <div class="chip" style="background-color: #000077;"></div>
+            <div class="button-wrapper">
+                <button>-</button>
+                <button>+</button>
+            </div>
+            <span class="decimal">119</span>
+        </div>
+        <span>HEX value: #777777</span>
+    </div>
+    <p>Mithril.js</p>
+    <div id="mithril"></div>
+</body>
+
+</html>
